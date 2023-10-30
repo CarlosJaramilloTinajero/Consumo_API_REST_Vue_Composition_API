@@ -20,11 +20,27 @@ const notify = (msg = '', type = 'default') => {
             return toast.error(msg);
             break;
 
+        case 'loading':
+            return toast.loading(msg);
+            break;
+
         default:
             return toast(msg);
             break;
     }
 };
+
+// Funcion para actualizar las notificaciones con toastify
+const updateNotify = (id, msg = '', type = 'error') => {
+    toast.update(id, {
+        render: msg,
+        autoClose: true,
+        closeOnClick: true,
+        closeButton: true,
+        type: type,
+        isLoading: false
+    });
+};
 // *****************************************
 
-export { notify };
+export { notify, updateNotify };

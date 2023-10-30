@@ -3,22 +3,24 @@ import { required, email, sameAs } from '@vuelidate/validators';
 import { useStore } from 'vuex';
 import useVuelidate from '@vuelidate/core';
 import { ref } from 'vue';
-
 import router from '../routes';
-import { notify } from '../notify';
+import { notify, updateNotify } from '../notify';
+
+const disable = ref(false);
+const idNotify = ref(0);
 
 // Instancia de la tienda de Vuex
 const store = useStore();
 
 // Objeto con para el formulario
 const credentials = ref({
-    address: '',
+    name: '',
     password: '',
 });
 
 // Reglas de validacion para el formulario
 const rules = {
-    address: { required, email },
+    name: { required },
     password: { required },
 };
 
@@ -33,32 +35,43 @@ const touchModel = (event, model) => {
 const v$ = useVuelidate(rules, credentials);
 
 const submit = async () => {
-    // Validamos el formulario
-    const result = await v$.value.$validate();
 
-    // Si esta bien el formulario
-    if (result) {
+    if (!disable.value) {
+        // Validamos el formulario
+        const result = await v$.value.$validate();
 
-        // Reseteamos la instancia de Vuelidate 
-        v$.value.$reset();
+        // Si esta bien el formulario
+        if (result) {
+            idNotify.value = notify('Procesando la inforacion', 'loading');
 
-        // Ejecutamos la accion de loginUser de la tienda de Vuex
-        const data = await store.dispatch('loginUser', { email: credentials.value.address, password: credentials.value.password });
+            // Reseteamos la instancia de Vuelidate 
+            v$.value.$reset();
 
-        if (!data) {
-            return;
+            disable.value = true;
+
+            // Ejecutamos la accion de loginUser de la tienda de Vuex
+            const data = await store.dispatch('loginUser', credentials.value);
+
+            if (!data) {
+                disable.value = false;
+                updateNotify(idNotify.value, 'Error en  el servidor', 'error');
+                return;
+            }
+
+            // Si el status de la data de la solicitud es true
+            if (data.status) {
+                updateNotify(idNotify.value, 'Logeado correctamente', 'success');
+
+                // Mandamos al inicio
+                router.push('/');
+            } else {
+                // Notificamos del error
+                updateNotify(idNotify.value, 'Las credenciales proporcionadas son incorrectas. Por favor, verifica tu email y contraseña e inténtalo de nuevo.', 'error')
+                disable.value = false;
+            }
         }
 
-        // Si el status de la data de la solicitud es true
-        if (data.status) {
-            // Mandamos al inicio
-            router.push('/');
-        } else {
-            // Notificamos del error
-            notify('Las credenciales proporcionadas son incorrectas. Por favor, verifica tu email y contraseña e inténtalo de nuevo.', 'error');
-        }
     }
-
 };
 
 </script>
@@ -68,13 +81,13 @@ const submit = async () => {
         <form @submit.prevent="submit">
             <p class="title">Inicar sesion</p>
             <div class="form-floating mb-3">
-                <input type="email" v-model="credentials.address" @focusout="touchModel($event, v$.address)"
-                    class="form-control" :class="{ 'is-invalid': v$.address.$invalid && v$.address.$dirty }"
+                <input type="text" v-model="credentials.name" @focusout="touchModel($event, v$.name)"
+                    class="form-control" :class="{ 'is-invalid': v$.name.$invalid && v$.name.$dirty }"
                     id="floatingInput">
-                <label for="floatingInput">Email</label>
-                <div class="invalid-feedback" v-if="v$.address.$invalid && v$.address.$dirty">
-                    <p class="mb-0" v-if="v$.address.email.$invalid">Ese correo no es valido</p>
-                    <p class="mb-0" v-if="v$.address.required.$invalid">El correo es requerido</p>
+                <label for="floatingInput">Nombre</label>
+                <div class="invalid-feedback" v-if="v$.name.$invalid && v$.name.$dirty">
+                    <!-- <p class="mb-0" v-if="v$.address.email.$invalid">Ese correo no es valido</p> -->
+                    <p class="mb-0" v-if="v$.name.required.$invalid">El nombre es requerido</p>
                 </div>
             </div>
 

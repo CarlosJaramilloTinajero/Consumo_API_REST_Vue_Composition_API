@@ -5,7 +5,8 @@ class connection {
 
     constructor(token = '') {
         // Endpoint base de la API
-        this.endpoint = 'http://127.0.0.1:8000/api';
+        // this.endpoint = 'http://127.0.0.1:8000/api';
+        this.endpoint = 'https://api.carlosjaramillo.beauty/api/';
         this.token = token;
 
         // Creamos la instancia de la clase axios con las cinfiguraciones que se van a utilizar en todos los endpoints y la guardo
