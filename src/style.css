@@ -9,6 +9,7 @@ font-family: 'Roboto Flex', sans-serif;
 
 body {
     background-color: rgba(0, 0, 0, 0.15);
+    overflow-x: hidden;
 }
 
 ::-webkit-scrollbar {

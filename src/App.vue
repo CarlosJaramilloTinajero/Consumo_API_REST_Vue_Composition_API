@@ -2,6 +2,7 @@
 import { computed } from "vue";
 import router from "./routes";
 import Navbar from './components/Navbar.vue';
+import Footer from "./components/Footer.vue";
 
 // Esta propiedad computada verifica si se puede mostrar el navbar
 const showNabvar = computed(() => {
@@ -17,6 +18,7 @@ const showNabvar = computed(() => {
     <div class="container">
       <router-view></router-view>
     </div>
+    <Footer></Footer>
   </div>
 </template>
 

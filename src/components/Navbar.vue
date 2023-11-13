@@ -51,7 +51,7 @@ const logout = () => {
   width: 100vw;
   height: 45px;
   box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
-  background-color: rgb(0, 196, 190)
+  background-color: rgb(0, 196, 190);
 }
 
 .navbar-c .router-links {
